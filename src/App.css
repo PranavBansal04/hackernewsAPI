@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
+.nav{
+  flex-flow: column;
+  background-image: url("https://images.hdqwalls.com/download/andromeda-galaxy-way-ik-1366x768.jpg");
+}
+
+body{
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  background-image: url("https://images.hdqwalls.com/download/andromeda-galaxy-way-ik-1366x768.jpg");
+  background-repeat:no-repeat;
+}
