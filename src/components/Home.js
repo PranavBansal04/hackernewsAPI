@@ -9,6 +9,7 @@ export default function Home() {
     const [loader, setLoader] = useState(false);
     const [searchData, setSearchData] = useState();
     const inputRef = useRef(null);
+    const [error,setError] = useState();
 
     function Loader() {
         return (
@@ -18,6 +19,10 @@ export default function Home() {
 
     const handleClick = (event) => {
         event.preventDefault();
+        if(inputRef.current?.value === ""){
+            setError("Search field can not be empty!");
+            return;
+        }
         console.log(inputRef.current?.value);
         setLoader(true);
         axios
@@ -42,11 +47,11 @@ export default function Home() {
                     <Navbar.Brand href="/" style={{ fontSize: '25px', fontFamily: "cursive" }}>Hacker News</Navbar.Brand>
 
                     <Form inline onSubmit={handleClick}>
-                        <FormControl type="text" placeholder="Search" className="mr-sm-2" ref={inputRef} required />
+                        <FormControl type="text" placeholder="Search" className="mr-sm-2" ref={inputRef} required onChange={()=> setError("")}/>
                         <Button style={{ margin: 'auto' }} onClick={handleClick}>Search</Button>
                     </Form>
-
-                    <p style={{ marginTop: "20px", fontSize: "22px", color: "white" }}>Total Results : {searchData ? searchData.nbHits : 0}</p>
+                    <p style={{color:'red'}}>{error?error:""}</p>
+                    <p style={{ fontSize: "22px", color: "white" }}>Total Results : {searchData ? searchData.nbHits : 0}</p>
                 </Navbar>
             </header>
 

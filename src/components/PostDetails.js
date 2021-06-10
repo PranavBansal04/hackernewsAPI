@@ -1,17 +1,23 @@
 import { React, useState, useEffect } from "react";
-import { Card } from 'react-bootstrap';
+import { Card,Button } from 'react-bootstrap';
 import './style.css';
 import axios from 'axios';
+import Collapsible from 'react-collapsible';
+import {useHistory} from 'react-router-dom';
+
 
 
 export default function PostDetails(props) {
 
-    const [data, setData] = useState([]);
+    const [data, setData] = useState();
+    const [children, setChildren] = useState([]);
     const [loader, setLoader] = useState(false);
-    
+    const history = useHistory();
+    const options = { year: 'numeric', month: 'long', day: "numeric", hour: 'numeric', minute: 'numeric' };
+
     function Loader() {
         return (
-            <div className="spin" style={{ color: 'blue', textAlign: 'center', margin: '200px' }}><span className="fas fa-spinner fa-pulse fa-2x"></span></div>
+            <div className="spin" style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}><span className="fas fa-spinner fa-pulse fa-2x"></span></div>
         )
     }
 
@@ -20,9 +26,10 @@ export default function PostDetails(props) {
         axios
             .get("http://hn.algolia.com/api/v1/items/" + props.match.params.id)
             .then((response) => {
-                console.log(response.data);
-                // setSearchData(response.data);
-                setTimeout(function () { setLoader(false); }, 500);
+                // console.log(response.data);
+                setData(response.data);
+                setChildren(response.data.children);
+                setLoader(false)
 
             })
             .catch((error) => {
@@ -30,48 +37,90 @@ export default function PostDetails(props) {
             });
     }
 
-    
+    function Comment({ comment }) {
+        return (
+            <div style={{ textAlign: 'left' }}>
+                <u>{comment.author + " | " + new Date(comment.created_at).toLocaleDateString([], options)}</u>
+                <p dangerouslySetInnerHTML={{ __html: comment.text }}></p>
+                <Collapsible
+                    trigger={<p style={{ cursor: "pointer", textAlign: 'left' }}>{"Comments : " + comment.children.length}</p>}
+                    transitionTime={200}
+                >
+
+                    <div style={{ 'padding': '0px 10px 0px 10px' }}>
+                        {comment.children.length > 0 ? <Comments comments={comment.children} /> : ""}
+                    </div>
+
+                </Collapsible>
+                {/* {comment.children.length > 0 && <Comments comments={comment.children} />} */}
+            </div>
+        )
+    }
 
 
-    
+    function Comments({ comments }) {
+        console.log("CHILD : " + comments);
+        return (
+            <ul>
+                {
+                    comments.length > 0 ? comments.map((c) => {
+                        return <li><Comment key={c.id} comment={c} /></li>
+
+                    }) : ""
+                }
+            </ul>
+        )
+    }
+
+    function myf(){
+        history.push("/");
+    }
+
+
     useEffect(() => {
-        console.log(props.match.params.id)
 
         fetchData();
-        // setData(results);
-        // if(pageLimit>nPages){
-        //     setPageLimit(nPages);
-        // }
+
     }, [props.match.params.id]);
 
 
 
     return (
-        <div className="container" style={{ marginTop: '150px' }}>
-            <p>HELLO</p>
+        <div className="container">
+
+            <Button onClick={myf}>BACK</Button>
+
+            <h1 style={{ color: 'white', marginTop: "30px" }} className="row justify-content-center">{data ? data.title : ""}</h1>
+            <h4 style={{ color: 'white', marginTop: "20px" }} className="row justify-content-center">{data ? 'Points : ' + data.points : ""}</h4>
+            <h4 style={{ color: 'white', marginTop: "20px" }} className="row justify-content-center">{data && children ? 'Comments - ' + children.length : ""}</h4>
             <div className="row mt-2 justify-content-center">
 
                 {
-                    loader ? (<Loader />) : data ? data.map((item) => {
+                    loader ? (<Loader />) : children ? children.map((item) => {
                         return (
 
-                            <Card key={item.objectID} className="user-card col-12 m-2 ">
-                                <Card.Body>
-                                    <Card.Title>{item.title}</Card.Title>
-                                    <Card.Text>{new Date(item.created_at).toLocaleDateString()}</Card.Text>
+                            <Card key={item.id} className="col-12 m-2 ">
+                                <Card.Text style={{ "textAlign": 'left' }}>{item.author + " | " + new Date(item.created_at).toLocaleDateString([], options)}</Card.Text>
+                                <hr style={{ margin: 0 }} />
+                                <Card.Text style={{ textAlign: 'justify' }} dangerouslySetInnerHTML={{ __html: item.text }}></Card.Text>
 
-                                    <Card.Text style={{ width: "50%", margin: 'auto', 'overflow': 'hidden', 'whiteSpace': 'nowrap', 'textOverflow': 'ellipsis' }}>
-                                        <a href={item.url}>{item.url}</a>
-                                    </Card.Text>
+                                <Collapsible
+                                    trigger={<p style={{ cursor: "pointer", textAlign: 'left' }}>{"Comments : " + item.children.length}</p>}
+                                    transitionTime={200}
+                                >
 
-                                    <Card.Text>{"Author : " + item.author + "  |  Points : " + item.points + "  |  Comments : " + item.num_comments}</Card.Text>
+                                    <div style={{ 'padding': '0px 30px 0px 30px' }}>
+                                        {item.children.length > 0 ? <Comments comments={item.children} /> : ""}
+                                    </div>
 
-                                </Card.Body>
+                                </Collapsible>
+
+
                             </Card>
                         )
                     }) : ""
                 }
-          
+
             </div>
         </div>
     );

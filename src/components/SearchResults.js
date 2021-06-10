@@ -1,8 +1,8 @@
-import { React, useState, useEffect,useHis } from "react";
+import { React, useState, useEffect } from "react";
 import { Card, Pagination } from 'react-bootstrap';
 import './style.css';
 import axios from 'axios';
-
+import {useHistory} from 'react-router-dom';
 
 export default function SearchResults({ results, nPages, query }) {
 
@@ -11,6 +11,7 @@ export default function SearchResults({ results, nPages, query }) {
     const [loading, setLoading] = useState(false);
     const [pageLimit,setPageLimit] = useState(5);
     const [currentPage, setCurrentPage] = useState(1);
+    const history = useHistory();
 
 
     function Loader() {
@@ -55,8 +56,10 @@ export default function SearchResults({ results, nPages, query }) {
         return new Array(pageLimit).fill().map((_, idx) => start + idx + 1);
     };
 
-    const handleClick = (e) =>{
-        e.preventDefault();
+    const handleClick = (id) =>{
+        
+        console.log(id);
+        history.push("/post/"+id);
 
     }
 
@@ -65,7 +68,7 @@ export default function SearchResults({ results, nPages, query }) {
         if(pageLimit>nPages){
             setPageLimit(nPages);
         }
-    }, [results]);
+    }, [results,nPages]);
 
 
 
@@ -77,7 +80,7 @@ export default function SearchResults({ results, nPages, query }) {
                     loading ? (<Loader />) : data ? data.map((item) => {
                         return (
 
-                            <Card key={item.objectID} className="user-card col-12 m-2 ">
+                            <Card key={item.objectID} className="user-card col-12 m-2 " onClick={()=> handleClick(item.objectID)}>
                                 <Card.Body>
                                     <Card.Title>{item.title}</Card.Title>
                                     <Card.Text>{new Date(item.created_at).toLocaleDateString()}</Card.Text>

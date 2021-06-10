@@ -10,7 +10,6 @@ import {
 import PostDetails from './components/PostDetails';
 import Home from './components/Home'
 
-
 function App() {
 
   return (
