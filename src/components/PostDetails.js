@@ -1,9 +1,8 @@
 import { React, useState, useEffect } from "react";
-import { Card,Button } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import './style.css';
 import axios from 'axios';
 import Collapsible from 'react-collapsible';
-import {useHistory} from 'react-router-dom';
 
 
 
@@ -12,7 +11,7 @@ export default function PostDetails(props) {
     const [data, setData] = useState();
     const [children, setChildren] = useState([]);
     const [loader, setLoader] = useState(false);
-    const history = useHistory();
+    
     const options = { year: 'numeric', month: 'long', day: "numeric", hour: 'numeric', minute: 'numeric' };
 
     function Loader() {
@@ -72,9 +71,6 @@ export default function PostDetails(props) {
         )
     }
 
-    function myf(){
-        history.push("/");
-    }
 
 
     useEffect(() => {
@@ -88,7 +84,6 @@ export default function PostDetails(props) {
     return (
         <div className="container">
 
-            <Button onClick={myf}>BACK</Button>
 
             <h1 style={{ color: 'white', marginTop: "30px" }} className="row justify-content-center">{data ? data.title : ""}</h1>
             <h4 style={{ color: 'white', marginTop: "20px" }} className="row justify-content-center">{data ? 'Points : ' + data.points : ""}</h4>

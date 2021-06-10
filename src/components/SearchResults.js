@@ -68,7 +68,7 @@ export default function SearchResults({ results, nPages, query }) {
         if(pageLimit>nPages){
             setPageLimit(nPages);
         }
-    }, [results,nPages]);
+    }, [results,nPages,pageLimit]);
 
 
 
